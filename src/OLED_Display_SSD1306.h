@@ -6,7 +6,11 @@
 #define OLED_Display_SSD1306_Black 0
 #define OLED_Display_SSD1306_White 1
 #define OLED_Display_SSD1306_Inverse 2
-
+extern uint8_t OLED_Display_SSD1306_i2caddr;
+extern uint8_t OLED_Display_SSD1306_Width;
+extern uint8_t OLED_Display_SSD1306_Height;
+extern int OLED_Display_SSD1306_Rotation;
+extern uint8_t *OLED_Display_SSD1306_Buffer;
 #if defined(I2C_BUFFER_LENGTH)
 #define WIRE_MAX std::min(256, I2C_BUFFER_LENGTH) 
 #elif defined(BUFFER_LENGTH)
