@@ -11,17 +11,6 @@ uint8_t OLED_Display_SSD1306_Height = 64;
 int OLED_Display_SSD1306_Rotation = 0;
 uint8_t *OLED_Display_SSD1306_Buffer;
 
-
-#if defined(I2C_BUFFER_LENGTH)
-#define WIRE_MAX min(256, I2C_BUFFER_LENGTH) 
-#elif defined(BUFFER_LENGTH)
-#define WIRE_MAX min(256, BUFFER_LENGTH) 
-#elif defined(SERIAL_BUFFER_SIZE)
-#define WIRE_MAX min(255, SERIAL_BUFFER_SIZE - 1) 
-#else
-#define WIRE_MAX 32 
-#endif
-
 void OLED_Display_SSD1306_drawPixel(int16_t x, int16_t y, uint16_t color)
 {
     if ((x >= 0) && (x < OLED_Display_SSD1306_Width) && (y >= 0) && (y < OLED_Display_SSD1306_Height)) {
@@ -94,10 +83,10 @@ void OLED_Display_SSD1306_drawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int1
                 b = bitmap[j * byteOLED_Display_SSD1306_Width + i / 8];
             }
             if (b & 0x80){
-                drawPixel(x + i, y, 1);
+                OLED_Display_SSD1306_drawPixel(x + i, y, 1);
             }
             else{
-                drawPixel(x + i, y, 0);
+                OLED_Display_SSD1306_drawPixel(x + i, y, 0);
             }
         }
     }

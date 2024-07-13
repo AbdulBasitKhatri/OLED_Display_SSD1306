@@ -6,8 +6,16 @@
 #define OLED_Display_SSD1306_Black 0
 #define OLED_Display_SSD1306_White 1
 #define OLED_Display_SSD1306_Inverse 2
-#define OLED_Display_SSD1306_Width 128
-#define OLED_Display_SSD1306_Height 64
+
+#if defined(I2C_BUFFER_LENGTH)
+#define WIRE_MAX std::min(256, I2C_BUFFER_LENGTH) 
+#elif defined(BUFFER_LENGTH)
+#define WIRE_MAX std::min(256, BUFFER_LENGTH) 
+#elif defined(SERIAL_BUFFER_SIZE)
+#define WIRE_MAX std::min(255, SERIAL_BUFFER_SIZE - 1) 
+#else
+#define WIRE_MAX 32 
+#endif
 
 // Function prototypes
 void OLED_Display_SSD1306_drawPixel(int16_t x, int16_t y, uint16_t color);
