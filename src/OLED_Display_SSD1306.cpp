@@ -1,11 +1,11 @@
-#include "OLED_Display_SSD1306_.h"
+#include "OLED_Display_SSD1306.h"
 
 #define OLED_DISPLAY_SSD1306_Black 0
 #define OLED_DISPLAY_SSD1306_White 1
 #define OLED_Display_SSD1306_Inverse 2
 #define swapVars(a, b) (((a) ^= (b)), ((b) ^= (a)), ((a) ^= (b))) 
 
-uint8_t i2caddr = 0x3c;
+uint8_t OLED_Display_SSD1306_i2caddr;
 uint8_t OLED_Display_SSD1306_Width = 128;
 uint8_t OLED_Display_SSD1306_Height = 64;
 int OLED_Display_SSD1306_Rotation = 0;
@@ -55,7 +55,7 @@ void OLED_Display_SSD1306_drawPixel(int16_t x, int16_t y, uint16_t color)
 
 void OLED_Display_SSD1306_display(void)
 {
-    Wire.beginTransmission(i2caddr);
+    Wire.beginTransmission(OLED_Display_SSD1306_i2caddr);
     Wire.write(0x22); // Set Page addr
     Wire.write(0x00); // Page start address
     Wire.write(0xFF); // Page end (not really, but works here)
@@ -65,13 +65,13 @@ void OLED_Display_SSD1306_display(void)
     Wire.endTransmission();
     uint16_t count = OLED_Display_SSD1306_Width * ((OLED_Display_SSD1306_Height + 7) / 8);
     uint8_t *ptr = OLED_Display_SSD1306_Buffer;
-    Wire.beginTransmission(i2caddr);
+    Wire.beginTransmission(OLED_Display_SSD1306_i2caddr);
     Wire.write((uint8_t)0x40);
     uint16_t bytesOut = 1;
     while (count--) {
         if (bytesOut >= WIRE_MAX) {
             Wire.endTransmission();
-            Wire.beginTransmission(i2caddr);
+            Wire.beginTransmission(OLED_Display_SSD1306_i2caddr);
             Wire.write((uint8_t)0x40);
             bytesOut = 1;
         }
@@ -103,9 +103,10 @@ void OLED_Display_SSD1306_drawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int1
     }
 }
 
-void OLED_Display_SSD1306_init()
+void OLED_Display_SSD1306_init(uint8_t _i2caddr)
 {
-    Wire.beginTransmission(i2caddr);
+    OLED_Display_SSD1306_i2caddr = _i2caddr;
+    Wire.beginTransmission(OLED_Display_SSD1306_i2caddr);
     Wire.write((uint8_t)0x00); // Co 0 D/C 0 (Write Command Mode)
     Wire.write(0xAE); // Display off
     Wire.write(0xD5); // Set display clock divider
@@ -113,16 +114,16 @@ void OLED_Display_SSD1306_init()
     Wire.write(0xA8); // Set Mux Ratio
     Wire.write(0x3F); // 63
     Wire.write(0xD8); // Set Display Offset
-    Wire.write(0x0); // No offset
+    Wire.write(0x0);  // No offset
     Wire.write(0x20); // Set Memory Addr Mode
     Wire.write(0x00); // Horizontal Addr Mode
     Wire.write(0x40); // Set Display Start Line (0x0);
-    Wire.write(0xA1); //Set SEGREMAP (0xA1 -> column addr 127 to seg0)
-    Wire.write(0xC8); //Set COM Output Scan Direction (c0h/c8h)
-    Wire.write(0xDA); //Set COM pins
+    Wire.write(0xA1); // Set SEGREMAP (0xA1 -> column addr 127 to seg0)
+    Wire.write(0xC8); // Set COM Output Scan Direction (c0h/c8h)
+    Wire.write(0xDA); // Set COM pins
     Wire.write(0x02); // 0x12
-    Wire.write(0x81); //Set Contrast Control
-    Wire.write(0xD9); //Set precharge
+    Wire.write(0x81); // Set Contrast Control
+    Wire.write(0xD9); // Set precharge
     Wire.write(0xF1);
     Wire.write(0xCF); // 0x7F
     Wire.write(0xA4); // Disable entire display on
